@@ -13,6 +13,7 @@ export default function createTwitch(options, rootEpic) {
 		noDefaultEpics = false,
 	} = options;
 	return Observable.defer(() => {
+		console.log("Connecting");
 		const outgoingBuffer$ = new QueueingSubject();
 		const cycle$ = new QueueingSubject();
 		
@@ -47,9 +48,11 @@ export default function createTwitch(options, rootEpic) {
 				.ignoreElements(),
 		);
 	})
-	.retry((error) => {
-		console.log("Error:", error);
-		return Observable.interval(10 * 1000); // retry every 10 seconds according to twitch api docs
+	.retryWhen((error$) => {
+		// retry every 10 seconds according to twitch api docs
+		return error$
+			.do((error) => console.log("Error:", error))
+			.delayWhen( v => Observable.interval(10 * 1000));
 	});
 }
 
@@ -57,7 +60,7 @@ export function outputEpic(outgoingBuffer$) {
 	return (action$) => {
 		return action$.ofType("@twitch/OUT")
 			.do((action) => {
-				//console.log("Outgoing: ", action);	
+				console.log("Outgoing: ", action);	
 				outgoingBuffer$.next(action.message);	
 			})
 			.ignoreElements();

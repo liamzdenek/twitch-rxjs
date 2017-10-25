@@ -10,8 +10,11 @@ const statusLoggerEpic = (action$) => {
 		.ignoreElements();
 };
 
+console.log("Epics: ", epics);
+
 const rootEpic = combineEpics(
 	statusLoggerEpic,
+	epics.authEpic(process.env.TWITCH_CLIENT_ID, "oauth:" + process.env.TWITCH_CLIENT_SECRET),
 	epics.loggingEpic,
 );
 
