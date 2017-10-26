@@ -1,2 +1,2 @@
 import { epics } from './modules';
-export const { pingEpic } = epics;
+export const { pingEpic, channelsEpic } = epics;

@@ -88,10 +88,14 @@ function transformStatus(status$) {
 // }
 function transformMessage(incoming$) {
 	return incoming$
+		.flatMap((messages) => Observable.of(...messages.split("\r\n")))
+		.filter((message) => message.length !== 0)
 		.map(parse)
 		.map((obj) => {
+			const obj_clone = { ...obj };
+			delete obj_clone.raw;
 			return {
-				...obj,
+				...obj_clone,
 				type: "@twitch/IN",
 				params: obj.params.length === 0 ? [] : [
 					...obj.params.slice(0, -1),

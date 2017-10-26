@@ -1,19 +1,28 @@
 import chalk from 'chalk'
 
-const sensitiveFinders = [
-	// (action) => action.type === '@twitch/OUT' && action.message.startsWith('PASS') && "PASS [[REDACTED]]"
+const defaultTransformers = [
+	(action) => {
+		if(action.type === '@twitch/OUT' && action.message.startsWith('PASS')) {
+			action.message = "PASS [[REDACTED]]";
+		}
+		return action
+	}
 ];
 
-function loggingEpic(action$) {
-	return action$
-		.do((action) => {
-			const finder = sensitiveFinders.find((f) => f(action));
-			console.log("Action Stream:",
-				">>>>>", chalk.green(action.type), "<<<<<",
-				finder ? finder(action) : JSON.stringify(action)
-			)
-		})
-		.ignoreElements();
+function loggingEpic(transformers) {
+	if(!transformers) { transformers = defaultTransformers; }
+	return (action$) => {
+		return action$
+			.do((_action) => {
+				let action = { ..._action }; 
+				transformers.forEach((fn) => action = fn(action));
+				console.log("Action Stream:",
+					">>>>>", chalk.green(action.type), "<<<<<",
+					JSON.stringify(action)
+				)
+			})
+			.ignoreElements();
+	}
 }
 
 export const epics = { loggingEpic };

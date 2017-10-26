@@ -11,11 +11,12 @@ const statusLoggerEpic = (action$) => {
 };
 
 console.log("Epics: ", epics);
+//console.log("ENV: ", process.env);
 
 const rootEpic = combineEpics(
 	statusLoggerEpic,
-	epics.authEpic(process.env.TWITCH_CLIENT_ID, "oauth:" + process.env.TWITCH_CLIENT_SECRET),
-	epics.loggingEpic,
+	epics.authEpic(process.env.TWITCH_USER_NAME, process.env.TWITCH_USER_OAUTH),
+	epics.loggingEpic(),
 );
 
 const twitch$ = createTwitch(options, rootEpic);
