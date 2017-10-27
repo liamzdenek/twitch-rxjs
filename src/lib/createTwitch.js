@@ -25,8 +25,8 @@ export default function createTwitch(options, rootEpic) {
 		);
 
 		const consumerCopy$ = Observable.merge(
-			cycle$,
 			incoming$.let(transformMessage),
+			cycle$,
 			connectionStatus$.let(transformStatus),
 		).share();
 

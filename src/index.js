@@ -17,6 +17,7 @@ const rootEpic = combineEpics(
 	statusLoggerEpic,
 	epics.authEpic(process.env.TWITCH_USER_NAME, process.env.TWITCH_USER_OAUTH),
 	epics.loggingEpic(),
+	epics.consumerEpic
 );
 
 const twitch$ = createTwitch(options, rootEpic);

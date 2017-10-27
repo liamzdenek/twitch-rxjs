@@ -11,6 +11,7 @@
   "dependencies": {
     "chalk": "^2.3.0",
     "irc-message": "^3.0.2",
+    "is-observable": "^0.2.0",
     "queueing-subject": "^0.1.1",
     "redux-observable": "^0.16.0",
     "rxjs": "^5.5.1",
