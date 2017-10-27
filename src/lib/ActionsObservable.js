@@ -2,6 +2,7 @@ import { ActionsObservable as Base } from 'redux-observable';
 import { filter } from 'rxjs/operator/filter';
 
 export default class ActionsObservable extends Base {
+	/*
 	ofTwitchType(...keys) {
 		const len = keys.length;
 		return this.ofType("@twitch/IN")::filter(({ command }) => {
@@ -16,4 +17,5 @@ export default class ActionsObservable extends Base {
 			}
 		})
 	}
+	*/
 }

@@ -1,4 +1,5 @@
 import { createTwitch, combineEpics, epics } from './lib';
+import { channelMonitor } from './channelMonitor';
 
 const options = {
 	path: "wss://irc-ws.chat.twitch.tv:443/irc",
@@ -13,11 +14,12 @@ const statusLoggerEpic = (action$) => {
 console.log("Epics: ", epics);
 //console.log("ENV: ", process.env);
 
+
 const rootEpic = combineEpics(
 	statusLoggerEpic,
 	epics.authEpic(process.env.TWITCH_USER_NAME, process.env.TWITCH_USER_OAUTH),
 	epics.loggingEpic(),
-	epics.consumerEpic
+	channelMonitor
 );
 
 const twitch$ = createTwitch(options, rootEpic);

@@ -1,5 +1,6 @@
 export function ircOut(message) { return { type: "@twitch/OUT", message }; }
 export function ircPing() { return ircOut("PING") }
+export function ircPong(m) { return ircOut("PONG :"+m) }
 export function ircNick(nick) { return ircOut("NICK " + nick) }
 export function ircPass(pass) { return ircOut("PASS " + pass) }
 export function ircJoin(channel) { return ircOut("JOIN " + channel); }
@@ -12,5 +13,6 @@ export const actions = {
 	ircNick,
 	ircPass,
 	ircJoin,
-	ircPart
+	ircPart,
+	ircPong
 }

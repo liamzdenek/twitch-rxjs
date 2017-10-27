@@ -1,20 +1,19 @@
 import { Observable } from 'rxjs';
 
-function consumerEpic(action$) {
-	return channelJoin(action$, process.env.TWITCH_CHANNEL, () => {
-		//return Observable.never();
-		return Observable.of(channelMsg("hi"));
-	})
-}
-
 import isObservable from 'is-observable';
 import { ircMessage } from './irc'
 function channelJoin(action$, channel, fn) { 
 	let err;
-	const inner$ = fn();
+
+	const message$ = action$.ofType("@twitch/IN")
+		.filter((a) => a.command === 'PRIVMSG' && a.params[0] === channel)
+		.map((a) => ({ ...a, channel: a.params[0], message: a.params.slice(1) }))
+	
+	const inner$ = fn(message$);
 	if(!isObservable(inner$)) {
 		throw new Error("inner$ function did not return an observable");
 	}
+
 	return Observable.concat(
 		// register to the channel
 		Observable.of(channelsRegister(channel)),
@@ -26,7 +25,7 @@ function channelJoin(action$, channel, fn) {
 		Observable.of(1).do((a)=> console.log("Running main fn")).ignoreElements(),
 
 		// run the consumer's logic and make sure errors don't prevent us from unregistering
-		fn()
+		inner$
 			.map((a) => {
 				if(a.type === "@channel/MESSAGE") {
 					return ircMessage(channel, a.message);
@@ -90,4 +89,6 @@ function channelsEpic(action$){
 		
 }
 
-export const epics = { channelsEpic, consumerEpic }
+export const epics = { channelsEpic }
+export const utils = { channelJoin } 
+export const actions = { channelsRegister, channelsUnregister, channelMsg }
